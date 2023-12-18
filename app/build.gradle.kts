@@ -50,6 +50,7 @@ dependencies {
     implementation ("androidx.appcompat:appcompat:1.5.1")
     implementation ("com.google.android.material:material:1.6.1")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
@@ -85,4 +86,11 @@ dependencies {
     androidTestImplementation ("com.squareup.okhttp3:okhttp-tls:4.9.3")
     androidTestImplementation ("com.android.support.test.espresso:espresso-contrib:3.0.2")
     androidTestImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("androidx.cardview:cardview:1.0.0")
+    implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+
+    implementation ("com.github.f0ris.sweetalert:library:1.6.2")
+//    implementation ("cn.pedant.sweetalert:library:1.6.4")
 }
