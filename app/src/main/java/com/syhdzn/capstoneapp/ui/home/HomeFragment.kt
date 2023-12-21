@@ -1,5 +1,6 @@
 package com.syhdzn.capstoneapp.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,25 +8,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.syhdzn.capstoneapp.R
+import com.syhdzn.capstoneapp.api_access.api_response.FoodsItem
 import com.syhdzn.capstoneapp.databinding.FragmentHomeBinding
+import com.syhdzn.capstoneapp.ui.article.ArticleActivity
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), FoodAdapter.OnItemClickListener {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var itemAdapter: ItemAdapter
+    private lateinit var foodAdapter: FoodAdapter
 
     private val imageIds = listOf(
-        R.drawable.makanan1,
-        R.drawable.makanan2,
-        R.drawable.makanan3
+        R.drawable.banner_1,
+        R.drawable.banner_2,
+        R.drawable.banner_3
     )
 
     private val autoScrollHandler = Handler(Looper.getMainLooper())
@@ -49,15 +54,41 @@ class HomeFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         recyclerView = binding.rvHome
 
+        observeFoodList()
         setupViewPager()
         setupPageIndicator()
         setupRecyclerView()
+        setupSearchView()
     }
 
+    private fun observeFoodList() {
+        viewModel.foodList.observe(viewLifecycleOwner, { foodList ->
+            foodAdapter.setData(foodList)
+        })
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        foodAdapter = FoodAdapter(emptyList(), this)
+        recyclerView.adapter = foodAdapter
+    }
+
+    private fun setupSearchView() {
+        binding.svHome.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { viewModel.searchFoodsByName(it) }
+                return true
+            }
+        })
+    }
 
     private fun setupViewPager() {
         val viewPager: ViewPager2 = binding.vpHomeCarousel
-        val adapter = HomeAdapter(imageIds)
+        val adapter = CarouselAdapter(imageIds)
         viewPager.adapter = adapter
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -65,6 +96,10 @@ class HomeFragment : Fragment() {
                 startAutoScroll()
             }
         })
+        observeCurrentPage()
+    }
+
+    private fun observeCurrentPage() {
         viewModel.currentPage.observe(viewLifecycleOwner, { position ->
             updatePageIndicator(position)
         })
@@ -103,26 +138,9 @@ class HomeFragment : Fragment() {
         autoScrollHandler.removeCallbacks(autoScrollRunnable)
     }
 
-    private fun setupRecyclerView() {
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val itemList = createItemList()
-        itemAdapter = ItemAdapter(itemList)
-        recyclerView.adapter = itemAdapter
-    }
-
-    private fun createItemList(): List<Item> {
-        val itemList = mutableListOf<Item>()
-        itemList.add(Item("Item 1", R.drawable.makanan1))
-        itemList.add(Item("Item 2", R.drawable.makanan2))
-        itemList.add(Item("Item 1", R.drawable.makanan1))
-        itemList.add(Item("Item 2", R.drawable.makanan2))
-        itemList.add(Item("Item 1", R.drawable.makanan1))
-        itemList.add(Item("Item 2", R.drawable.makanan2))
-        itemList.add(Item("Item 1", R.drawable.makanan1))
-        itemList.add(Item("Item 2", R.drawable.makanan2))
-        itemList.add(Item("Item 1", R.drawable.makanan1))
-        itemList.add(Item("Item 2", R.drawable.makanan2))
-        // ... tambahkan lebih banyak item sesuai kebutuhan
-        return itemList
+    override fun onItemClick(food: FoodsItem) {
+        val intent = Intent(requireContext(), ArticleActivity::class.java)
+        intent.putExtra("foodItem", food)
+        startActivity(intent)
     }
 }

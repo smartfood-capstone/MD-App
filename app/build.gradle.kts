@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "BASE_URL", "\"https://MyLink\"")
+        buildConfigField("String", "BASE_URL", "\"https://backend-okw2poae6q-et.a.run.app/api/v1/\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,6 +58,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("io.coil-kt:coil:1.4.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
@@ -92,5 +93,7 @@ dependencies {
     implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
 
     implementation ("com.github.f0ris.sweetalert:library:1.6.2")
+    implementation ("com.github.sina-seyfi:AdvancedCardView:1.0.1")
+//    implementation ("com.tbuonomo:dotsindicator:5.0")
 //    implementation ("cn.pedant.sweetalert:library:1.6.4")
 }

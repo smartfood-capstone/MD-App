@@ -16,7 +16,6 @@ import com.syhdzn.capstoneapp.R
 import com.syhdzn.capstoneapp.databinding.ActivityWelcomeBinding
 import com.syhdzn.capstoneapp.ui.dashboard.DashboardActivity
 
-
 class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWelcomeBinding
@@ -83,10 +82,9 @@ class WelcomeActivity : AppCompatActivity() {
 
     private fun setupPageIndicator() {
         val indicatorContainer = binding.indicatorContainer
-        val context = indicatorContainer.context
 
         for (i in imageIds.indices) {
-            val indicator = layoutInflater.inflate(
+            val indicator = LayoutInflater.from(indicatorContainer.context).inflate(
                 R.layout.carousel_indicator, indicatorContainer, false
             ) as ImageView
             indicatorContainer.addView(indicator)
@@ -103,7 +101,6 @@ class WelcomeActivity : AppCompatActivity() {
             )
         }
     }
-
 
     private fun startAutoScroll() {
         stopAutoScroll()

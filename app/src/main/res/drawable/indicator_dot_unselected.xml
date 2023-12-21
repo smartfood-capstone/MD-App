@@ -1,4 +1,5 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="#CCCCCC" />
+<shape android:shape="oval" xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/white" /> <!-- Warna latar belakang tombol saat dalam keadaan normal -->
+    <stroke android:color="@color/color_1" android:width="2dp" /> <!-- Warna dan lebar stroke (garis tepi) saat tombol dalam keadaan normal -->
+    <corners android:radius="10dp" /> <!-- Jari-jari sudut tombol -->
 </shape>

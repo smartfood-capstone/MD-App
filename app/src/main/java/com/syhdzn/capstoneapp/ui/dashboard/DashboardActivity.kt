@@ -81,6 +81,8 @@ class DashboardActivity : AppCompatActivity() {
         if (switchToFragment != null) {
             when (switchToFragment) {
                 "DetectionFragment" -> switchToDetectionFragment()
+                "ShopFragment" -> switchToDetectionFragment()
+                "HistoryFragment" -> switchToDetectionFragment()
             }
         }
 
@@ -96,6 +98,7 @@ class DashboardActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
     }
+
 
     override fun onBackPressed() {
         val intent = Intent(this, DashboardActivity::class.java)

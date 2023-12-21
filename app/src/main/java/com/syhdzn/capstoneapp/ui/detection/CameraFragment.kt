@@ -23,16 +23,14 @@ import androidx.fragment.app.Fragment
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.syhdzn.capstoneapp.databinding.FragmentCameraBinding
 import com.syhdzn.capstoneapp.ui.process.ProcessActivity
+import com.syhdzn.capstoneapp.utils.createFile
 import com.syhdzn.capstoneapp.utils.showToast
 import com.syhdzn.capstoneapp.utils.uriToFile
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import com.syhdzn.capstoneapp.utils.createFile
-
 
 const val CAMERA_PERMISSION_REQUEST = 123
-const val CAMERA_X_RESULT = 123
 
 class CameraFragment : Fragment() {
 
@@ -41,7 +39,7 @@ class CameraFragment : Fragment() {
 
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageCapture: ImageCapture? = null
-    private var getFile: File? = null
+    private var capturedFile: File? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,8 +51,8 @@ class CameraFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupAction()
-        setupProperty()
+        setupViews()
+        setupActions()
     }
 
     override fun onResume() {
@@ -62,22 +60,20 @@ class CameraFragment : Fragment() {
         checkCameraPermissionAndStart()
     }
 
-    private fun setupProperty() {
+    private fun setupViews() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    private fun setupAction() {
-        binding.btnCamera.setOnClickListener {
-            takePhoto()
-        }
-        binding.btnGallery.setOnClickListener {
-            startGallery()
-        }
-        binding.btnSwitch.setOnClickListener {
-            cameraSelector =
-                if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
-                else CameraSelector.DEFAULT_BACK_CAMERA
-            startCamera()
+    private fun setupActions() {
+        binding.apply {
+            btnCamera.setOnClickListener { takePhoto() }
+            btnGallery.setOnClickListener { startGallery() }
+            btnSwitch.setOnClickListener {
+                cameraSelector =
+                    if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
+                    else CameraSelector.DEFAULT_BACK_CAMERA
+                startCamera()
+            }
         }
     }
 
@@ -100,20 +96,13 @@ class CameraFragment : Fragment() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder()
                 .build()
-                .also {
-                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-                }
+                .also { it.setSurfaceProvider(binding.viewFinder.surfaceProvider) }
 
             imageCapture = ImageCapture.Builder().build()
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    requireActivity(),
-                    cameraSelector,
-                    preview,
-                    imageCapture
-                )
+                cameraProvider.bindToLifecycle(requireActivity(), cameraSelector, preview, imageCapture)
             } catch (e: Exception) {
                 requireActivity().showToast("Failed to Show Camera")
             }
@@ -153,19 +142,19 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    hideLoading()
-
-                    val intent = Intent(requireContext(), ProcessActivity::class.java)
-                    intent.putExtra("picture", photoFile)
-                    intent.putExtra(
-                        "isBackCamera",
-                        cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
-                    )
-
-                    startActivity(intent)
+                    handleImageSaved(photoFile)
                 }
             }
         )
+    }
+
+    private fun handleImageSaved(photoFile: File) {
+        hideLoading()
+
+        val intent = Intent(requireContext(), ProcessActivity::class.java)
+        intent.putExtra("picture", photoFile)
+        intent.putExtra("isBackCamera", cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
+        startActivity(intent)
     }
 
     private fun startGallery() {
@@ -184,8 +173,7 @@ class CameraFragment : Fragment() {
             val selectedImage: Uri? = result.data?.data
             selectedImage?.let {
                 setupLoading()
-                val mFile = uriToFile(selectedImage, requireContext())
-                getFile = mFile
+                capturedFile = uriToFile(selectedImage, requireContext())
                 Handler(Looper.getMainLooper()).postDelayed({
                     val intent = Intent(requireContext(), ProcessActivity::class.java)
                     intent.putExtra("imageUri", selectedImage.toString())
@@ -199,7 +187,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun setupLoading(){
+    private fun setupLoading() {
         val pDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
         pDialog.progressHelper.barColor = Color.parseColor("#06283D")
         pDialog.titleText = "Loading"
@@ -207,7 +195,7 @@ class CameraFragment : Fragment() {
         pDialog.show()
     }
 
-    private fun hideLoading(){
+    private fun hideLoading() {
         val pDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
         pDialog.progressHelper.barColor = Color.parseColor("#06283D")
         pDialog.titleText = "Loading"
@@ -215,4 +203,12 @@ class CameraFragment : Fragment() {
         pDialog.hide()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseResources()
+    }
+
+    private fun releaseResources() {
+        cameraExecutor.shutdown()
+    }
 }

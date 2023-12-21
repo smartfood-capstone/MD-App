@@ -1,8 +1,18 @@
 package com.syhdzn.capstoneapp.api_access.api_response
 
-data class GetAllFoodsResponse(
-    val description: String,
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class FoodsItem(
     val id: Int,
-    val image: String,
-    val name: String
+    val name: String,
+    val description: String,
+    val image: String
+): Parcelable
+
+data class FoodsResponse(
+    val data: List<FoodsItem>,
+    val message: String,
+    val status: Int
 )

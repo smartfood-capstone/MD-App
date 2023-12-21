@@ -2,7 +2,7 @@
     <string name="app_name">CapstoneApp</string>
 
     <string name="txt_welcome_title">WELCOME</string>
-    <string name="txt_welcome_description">Lorem ipsum dolor sit amet consectetur. Ut penatibus nam vestibulum turpis dui tortor porta. Euismod cursus sodales egestas enim risus sit tincidunt diam mi. Odio molestie sagittis ultrices amet consectetur. Turpis lacus et accumsan senectus eu massa quis placerat.</string>
+    <string name="txt_welcome_description">Welcome to Smart Food Finder Apps! Find delicious food and information on your favorite foods easily here.</string>
     <string name="txt_welcome_button">Next</string>
 
     <string name="txt_home">Home</string>
