@@ -28,4 +28,6 @@ class HomeAdapter(private val imageIds: List<Int>) :
     override fun getItemCount(): Int {
         return imageIds.size
     }
+
+    
 }
